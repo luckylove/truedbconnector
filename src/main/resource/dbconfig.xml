@@ -1,0 +1,44 @@
+<resources>
+    <environments active="UAT">
+        <env name="UAT">
+            <getConfig>
+                <!-- This folder will store local xml config file -->
+
+                <dataSource>
+                    <driver>oracle.jdbc.driver.OracleDriver</driver>
+                    <url>jdbc:oracle:thin:@localhost:1521:XE</url>
+                    <username>AAEP</username>
+                    <password>admin</password>
+                    <connectionProperties>oracle.net.CONNECT_TIMEOUT=2000;oracle.jdbc.ReadTimeout=5000</connectionProperties>
+                    <removeAbandoned>true</removeAbandoned>
+                    <removeAbandonedTimeout>300</removeAbandonedTimeout>
+                    <maxActive>40</maxActive>
+                    <maxIdle>1</maxIdle>
+                    <maxWait>4000</maxWait>
+                    <testWhileIdle>true</testWhileIdle>
+                    <timeBetweenEvictionRunsMillis>30000</timeBetweenEvictionRunsMillis>
+                    <minEvictableIdleTimeMillis>60000</minEvictableIdleTimeMillis>
+                    <testOnBorrow>true</testOnBorrow>
+                    <validationQuery>SELECT 1 from dual</validationQuery>
+
+                    <!-- List config name will use this db-->
+                    <configs>
+                        <config method="GetQemRoute" procerdure="GET_QEM_ROUTE"/>
+                        <!-- support memory-->
+                    </configs>
+                </dataSource>
+            </getConfig>
+        </env>
+        <env name="PRO">
+            <getConfig>
+                <localPath>C://abc</localPath>
+                <dataSource>
+                    <driver></driver>
+                    <url></url>
+                    <username>abc</username>
+                    <password>cdf</password>
+                </dataSource>
+            </getConfig>
+        </env>
+    </environments>
+</resources>
