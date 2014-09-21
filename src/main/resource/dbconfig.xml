@@ -23,7 +23,12 @@
 
                     <!-- List config name will use this db-->
                     <configs>
-                        <config method="GetQemRoute" procerdure="GET_QEM_ROUTE"/>
+                        <config method="GetQemRoute">
+                            <![CDATA[
+                               select * from QEM_ROUTE where PRODUCT = ? AND
+                               (GRADING = ? OR (NULLIF(?, '') IS NOT NULL AND ? LIKE ('%' || KEYWORD || '%'))) AND rownum =1
+                            ]]>
+                        </config>
                         <!-- support memory-->
                     </configs>
                 </dataSource>

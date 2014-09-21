@@ -4,19 +4,15 @@ import com.trues.config.model.Config;
 import com.trues.config.model.GetConfig;
 import com.trues.service.model.DBObject;
 import com.trues.service.model.QEM_ROUTE;
+import com.trues.util.BeanPropertyRowMapperCustom;
 import com.trues.util.TrueLogUtil;
-import com.trues.util.TrueUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.SqlOutParameter;
-import org.springframework.jdbc.core.SqlParameter;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.Types;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * User: son.nguyen
@@ -46,34 +42,16 @@ public class ConfigService {
                 put("grading", grading);
                 put("subject", subject);
             }});
-            SimpleJdbcCall simpleJdbcCall1 = new SimpleJdbcCall(cf.getJdbcTemplate()).withoutProcedureColumnMetaDataAccess()
-                    .useInParameterNames("IN_PRODUCT")
-                    .useInParameterNames("IN_GRADING")
-                    .useInParameterNames("IN_SUBJECT")
-                    .declareParameters(
-                            new SqlParameter("IN_PRODUCT", Types.VARCHAR),
-                            new SqlParameter("IN_GRADING", Types.VARCHAR),
-                            new SqlParameter("IN_SUBJECT", Types.VARCHAR),
-                            new SqlOutParameter("OUT_PRODUCT", Types.VARCHAR),
-                            new SqlOutParameter("OUT_GRADING", Types.VARCHAR),
-                            new SqlOutParameter("OUT_KEYWORD", Types.VARCHAR),
-                            new SqlOutParameter("OUT_PRIORITY", Types.VARCHAR),
-                            new SqlOutParameter("OUT_NOTE", Types.VARCHAR),
-                            new SqlOutParameter("OUT_HAS_RESULT", Types.VARCHAR))
-                    .withProcedureName(cf.getProcerdure());
+            Object[] values = {product, grading, subject, subject};
 
-            SqlParameterSource in = new MapSqlParameterSource().addValue("IN_PRODUCT", product)
-                    .addValue("IN_PRODUCT", product)
-                    .addValue("IN_GRADING", grading)
-                    .addValue("IN_SUBJECT", subject);
-            Map<String, Object> execute = simpleJdbcCall1.execute(in);
+            int[] types = {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR};
 
-            QEM_ROUTE ob = new QEM_ROUTE();
-            //map to object
-            TrueUtils.map2Object(ob, execute);
-            if (!ob.isNoResult()) {
-                rs.setResult(ob);
+            JdbcTemplate jdbcTemplate = cf.getJdbcTemplate();
+            List<QEM_ROUTE> objects = jdbcTemplate.query(cf.getConfig(), values, types, new BeanPropertyRowMapperCustom<QEM_ROUTE>(QEM_ROUTE.class));
+            if (!objects.isEmpty()) {
+                rs.setResult(objects.get(0));
             }
+
             //as not found anything
             TrueLogUtil.printOutput(logger, _sessionId, cf, null, rs);
             return rs;

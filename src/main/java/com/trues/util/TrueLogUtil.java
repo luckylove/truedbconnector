@@ -28,7 +28,7 @@ public class TrueLogUtil {
 
     public static void printInput(Logger log, String sessionId, Config cf, List<String> excludeFields, Object obj) {
 
-        log.info(String.format(" - %s : ===== Calling: <%s/%s> =====", sessionId, cf.getProcerdure(), cf.getTableName()));
+        log.info(String.format(" - %s : ===== Calling: <%s> =====", sessionId, cf.getMethod()));
         log.info(String.format(" - %s : === DB Server: %s ===", sessionId, cf.getConnectStr()));
         String json = "";
         try {
@@ -62,7 +62,7 @@ public class TrueLogUtil {
         } catch (Exception e) {
         }
 
-        log.info(String.format(" - %s : === Output: <%s>  ===", sessionId, cf.getProcerdure()));
+        log.info(String.format(" - %s : === Output: <%s>  ===", sessionId, cf.getMethod()));
         if (StringUtils.isNotEmpty(json)) {
             String[] split = json.split("\\n");
             for (String key : split) {
