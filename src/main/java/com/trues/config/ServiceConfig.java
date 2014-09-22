@@ -1,22 +1,20 @@
 package com.trues.config;
 
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
 import com.trues.config.model.*;
-import org.apache.commons.digester3.Digester;
-import org.apache.commons.digester3.binder.AbstractRulesModule;
-import org.apache.commons.digester3.binder.DigesterLoader;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
-import static org.apache.commons.digester3.binder.DigesterLoader.newLoader;
-
-public class ServiceConfig extends AbstractRulesModule {
+public class ServiceConfig /*extends AbstractRulesModule */{
 
     private static Environments  environments;
 
-    @Override
+   /* @Override
     protected void configure()
     {
         forPattern( "resources/environments" ).createObject().ofType( Environments.class ).then()
@@ -45,14 +43,31 @@ public class ServiceConfig extends AbstractRulesModule {
         forPattern("resources/environments/env/getConfig/dataSource/configs/config").createObject().ofType(Config.class).then().setProperties().then().setBeanProperty().then()
                 .setNext("addConfig");
 
-    }
+    }*/
 
     public static Environments parse(InputStream inputStream) throws IOException, SAXException {
-        DigesterLoader loader = newLoader( new ServiceConfig() )
+
+        XStream xstream = new XStream(new StaxDriver());
+        xstream.ignoreUnknownElements();
+        xstream.processAnnotations(Config.class);
+        xstream.alias("resources", Resources.class);
+        xstream.alias("environments", Environments.class);
+        xstream.useAttributeFor(Environments.class, "active");
+        xstream.addImplicitMap(Environments.class, "envs", "env", Env.class, "name");
+        xstream.useAttributeFor(Env.class, "name");
+        xstream.alias("getConfig", GetConfig.class);
+        xstream.addImplicitCollection(GetConfig.class, "dataSources", "dataSource", DataSource.class);
+        xstream.alias("configs", List.class);
+        xstream.alias("config", Config.class);
+        xstream.useAttributeFor(Config.class, "method");
+        Resources environments = (Resources)xstream.fromXML(inputStream);
+        ServiceConfig.environments = environments.getEnvironments();
+
+       /* DigesterLoader loader = newLoader( new ServiceConfig() )
                 .setNamespaceAware( true )
                 .setXIncludeAware( true );
         Digester digester = loader.newDigester();
-        ServiceConfig.environments = digester.parse(inputStream);
+        ServiceConfig.environments = digester.parse(inputStream);*/
         return  ServiceConfig.environments;
     }
 }

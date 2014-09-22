@@ -1,5 +1,7 @@
 package com.trues.config.model;
 
+import com.thoughtworks.xstream.annotations.XStreamConverter;
+import com.thoughtworks.xstream.converters.extended.ToAttributedValueConverter;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -9,6 +11,7 @@ import javax.sql.DataSource;
  * Date: 10/30/13
  * Time: 10:06 PM
  */
+@XStreamConverter(value=ToAttributedValueConverter.class, strings={"config"})
 public class Config {
 
     public static final String DB = "DB";
@@ -24,10 +27,6 @@ public class Config {
     private javax.sql.DataSource dataSource;
     private JdbcTemplate jdbcTemplate;
     private String tableName;
-
-
-
-
 
     public String getConfig() {
         return config;
